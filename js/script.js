@@ -8,7 +8,10 @@ let minhaListaDeItens = [];
 
 button.addEventListener('click', (e) => {
     e.preventDefault();
-    minhaListaDeItens.push(input.value);
+    minhaListaDeItens.push({
+        tarefa: input.value,
+        concluida: false
+    });
     input.value = ''
     mostrarTarefas();
 
@@ -18,14 +21,36 @@ button.addEventListener('click', (e) => {
 
 function mostrarTarefas () {
     let novaLi = ''
-    minhaListaDeItens.forEach(tarefa => {
+    minhaListaDeItens.forEach((item, index) => {
         novaLi = novaLi +  `
-        <li class="task">
-        <img src="./img/checked.png" alt="check-na-tarefa">
-        <p>${tarefa}</p>
-        <img src="./img/trash.png" alt="deletar-tarefa">
+        <li class="task ${item.concluida && "done"}">
+        <img src="./img/checked.png" alt="check-na-tarefa" onClick="concluirTarefa(${index})">
+        <p>${item.tarefa}</p>
+        <img src="./img/trash.png" alt="deletar-tarefa" onclick="deletarItem(${index})">
     </li>`
     });
 
     listaCompleta.innerHTML = novaLi;
+
+    localStorage.setItem("lista", JSON.stringify(minhaListaDeItens));
 }
+
+function concluirTarefa (index) {
+    minhaListaDeItens[index].concluida = !minhaListaDeItens[index].concluida;
+    mostrarTarefas();
+}
+
+function deletarItem (index) {
+    minhaListaDeItens.splice(index, 1);
+    mostrarTarefas();
+}
+
+function recarregarTarefas () {
+        const tarefasDoLocalStorage = localStorage.getItem("lista");
+        if (tarefasDoLocalStorage) {
+    minhaListaDeItens  = JSON.parse(tarefasDoLocalStorage);
+    }
+    mostrarTarefas();
+}
+
+recarregarTarefas();
